@@ -11,31 +11,43 @@ public class EventManager {
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public void registerListener(EventListener listener) {
-        if (Objects.nonNull(listener) && !executorService.isShutdown()) {
-            listeners.add(listener);
+        if (Objects.isNull(listener)) {
+            throw new IllegalArgumentException("Listener can't be null");
         }
+        if (executorService.isShutdown()) {
+            throw new IllegalStateException("Event manager is shutdown");
+        }
+        listeners.add(listener);
     }
 
     public void deregisterListener(EventListener listener) {
-        if (Objects.nonNull(listener) && !executorService.isShutdown()) {
-            listeners.remove(listener);
+        if (Objects.isNull(listener)) {
+            throw new IllegalArgumentException("Listener can't be null");
         }
+        if (executorService.isShutdown()) {
+            throw new IllegalStateException("Event manager is shutdown");
+        }
+        listeners.remove(listener);
     }
 
     public void notifyEvent(Event event) {
-        if (Objects.nonNull(event) && !executorService.isShutdown()) {
-            for (EventListener listener : listeners) {
-                executorService.submit(() -> {
-                    try {
-                        listener.onEvent(event);
-                    } catch (Exception e) {
-                        System.out.println("Error occurred in "
-                                + Thread.currentThread().getName()
-                                + ": "
-                                + e.getMessage());
-                    }
-                });
-            }
+        if (Objects.isNull(event)) {
+            throw new IllegalArgumentException("Event can't be null");
+        }
+        if (executorService.isShutdown()) {
+            throw new IllegalStateException("Event manager is shutdown");
+        }
+        for (EventListener listener : listeners) {
+            executorService.submit(() -> {
+                try {
+                    listener.onEvent(event);
+                } catch (Exception e) {
+                    System.out.println("Error occurred in "
+                            + Thread.currentThread().getName()
+                            + ": "
+                            + e.getMessage());
+                }
+            });
         }
     }
 
