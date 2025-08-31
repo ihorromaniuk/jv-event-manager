@@ -1,13 +1,13 @@
 package mate.academy;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private final Set<EventListener> listeners = new CopyOnWriteArraySet<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public void registerListener(EventListener listener) {
